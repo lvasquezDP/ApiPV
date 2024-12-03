@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // O "mysql", "sqlite", etc.
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ADMINISTRADOR
+  TRABAJADOR
+}
+
+model Tienda {
+  id             Int       @id @default(autoincrement())
+  nombre         String
+  contacto       String?
+  direccion      String?
+  img            String?
+  fechaCreacion  DateTime  @default(now())
+  productos      Usuario[]
+}
+
+model Usuario {
+  id             Int      @id @default(autoincrement())
+  nombre         String
+  correo         String   @unique
+  correoValido   Boolean  @default(false)
+  contraseña     String
+  rol            Rol
+  img            String?
+  tienda         Tienda @relation(fields: [tiendaId], references: [id])
+  tiendaId       Int
+  fechaCreacion  DateTime @default(now())
+  ventas         Venta[]
+  cambios        HistorialCambio[]
+}
+
+model Proveedor {
+  id             Int       @id @default(autoincrement())
+  nombre         String
+  contacto       String?
+  direccion      String?
+  img            String?
+  fechaCreacion  DateTime  @default(now())
+  productos      Producto[]
+}
+
+model Producto {
+  id             Int      @id @default(autoincrement())
+  nombre         String
+  descripcion    String?
+  img            String?
+  precioCompra   Float
+  precioVenta    Float
+  proveedor      Proveedor @relation(fields: [proveedorId], references: [id])
+  proveedorId    Int
+  detallesVentas DetalleVenta[]
+  cambios        HistorialCambio[]
+}
+
+model Venta {
+  id             Int          @id @default(autoincrement())
+  usuario        Usuario      @relation(fields: [usuarioId], references: [id])
+  usuarioId      Int
+  fecha          DateTime     @default(now())
+  total          Float
+  detalles       DetalleVenta[]
+}
+
+model DetalleVenta {
+  id             Int      @id @default(autoincrement())
+  venta          Venta    @relation(fields: [ventaId], references: [id])
+  ventaId        Int
+  producto       Producto @relation(fields: [productoId], references: [id])
+  productoId     Int
+  cantidad       Int
+  precioUnitario Float
+  subtotal       Float
+}
+
+model HistorialCambio {
+  id             Int      @id @default(autoincrement())
+  producto       Producto @relation(fields: [productoId], references: [id])
+  productoId     Int
+  usuario        Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId      Int
+  cambio         Json
+  fecha          DateTime @default(now())
+}
