@@ -3,18 +3,15 @@ import { envs } from "../config";
 
 export const prisma = new PrismaClient().$extends({
     result:{
-        usuario:{
-// img
+      usuario:{
+        img:{
+          compute: (x)=> x.img&&= `${envs.WEBSERVICE_URL}${x.img}`
         }
-    },
-  query: {
-    usuario: {
-
-      async findUnique({ args, query }) {
-        const usuario = await query(args);
-        if (usuario?.img) usuario.img = `${envs.WEBSERVICE_URL}${usuario.img}`;
-        return usuario;
       },
+      tienda:{
+        img:{
+          compute: (x)=> x.img&&= `${envs.WEBSERVICE_URL}${x.img}`
+        }
+      }
     },
-  },
 });

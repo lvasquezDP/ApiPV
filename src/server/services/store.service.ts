@@ -1,7 +1,6 @@
 import { prisma } from "../../data";
 import { EmailService } from "../../plugins";
-import { CustomError } from "../../rules";
-import { RegisterStoreDTO } from "../../rules/dtos/store/register-store.dto";
+import { CustomError, RegisterStoreDTO } from "../../rules";
 
 export class StoreService {
   constructor(private readonly emailService: EmailService) {}

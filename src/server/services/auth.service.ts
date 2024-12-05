@@ -1,12 +1,12 @@
 import { envs } from "../../config";
 import { prisma } from "../../data";
 import { EmailService, JWT, bcrypt } from "../../plugins";
-import { CustomError, loginUserDTO, RegisterUserDTO } from "../../rules";
+import { CustomError, LoginUserDTO, RegisterUserDTO } from "../../rules";
 
 export class AuthService {
   constructor(private readonly emailService: EmailService) {}
 
-  public async loginUser(DTO: loginUserDTO) {
+  public async loginUser(DTO:LoginUserDTO) {
     const userdb = await prisma.usuario.findUnique({
       where: { correo: DTO.correo },
       include: { tienda: true },
