@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthMiddleware } from "../rules/middleware/auth.middleware";
 import { AuthRoutes } from "./auth/routes";
+import { StoreRoutes } from "./store/routes";
 
 export class AppRoutes {
   static get routes(): Router {
@@ -17,7 +18,7 @@ export class AppRoutes {
   static get api(): Router {
     const router = Router();
 
-    // router.use("/category", CategoryRoutes.routes);
+    router.use("/store", StoreRoutes.routes);
     
     return router;
   }

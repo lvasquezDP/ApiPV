@@ -1,12 +1,7 @@
 import { envs } from "../../config";
 import { prisma } from "../../data";
 import { EmailService, JWT, bcrypt } from "../../plugins";
-import {
-  CustomError,
-  loginUserDTO,
-  RegisterUserDTO,
-  UserEntity,
-} from "../../rules";
+import { CustomError, loginUserDTO, RegisterUserDTO } from "../../rules";
 
 export class AuthService {
   constructor(private readonly emailService: EmailService) {}
@@ -14,16 +9,17 @@ export class AuthService {
   public async loginUser(DTO: loginUserDTO) {
     const userdb = await prisma.usuario.findUnique({
       where: { correo: DTO.correo },
+      include: { tienda: true },
     });
     if (!userdb) throw CustomError.unAuthorized("User not exist");
     if (!bcrypt.compare(DTO.contraseña, userdb.contraseña))
       throw CustomError.unAuthorized(`Password not match`);
     try {
-      const { contraseña, ...user } = UserEntity.fromObject(userdb);
+      const { contraseña, ...user } = userdb;
 
       return {
         token: await JWT.generateToken({ correo: user.correo, id: user.id }),
-        user: userdb,
+        user,
       };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
@@ -36,15 +32,13 @@ export class AuthService {
     try {
       await this.sendEmail(DTO.correo);
 
-      const { contraseña, ...user } = UserEntity.fromObject(
-        await prisma.usuario.create({
-          data: {
-            ...DTO,
+      const { contraseña, ...user } = await prisma.usuario.create({
+        data: {
+          ...DTO,
+          contraseña: bcrypt.hash(DTO.contraseña),
+        },
+      });
 
-            contraseña: bcrypt.hash(DTO.contraseña),
-          },
-        })
-      );
       return {
         token: await JWT.generateToken({ correo: user.correo, id: user.id }),
         user,
@@ -61,7 +55,7 @@ export class AuthService {
       };
       await prisma.usuario.update({
         where: { correo: correo },
-        data: { 
+        data: {
           correoValido: true,
         },
       });
@@ -84,7 +78,7 @@ export class AuthService {
       `,
       });
     } catch (error) {
-      throw `Error al enviar el correo`;
+      throw CustomError.internalServer(`Error al enviar el correo`);
     }
   };
 }

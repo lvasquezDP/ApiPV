@@ -14,6 +14,7 @@ datasource db {
 }
 
 enum Rol {
+  ROOT
   ADMINISTRADOR
   TRABAJADOR
 }
@@ -25,7 +26,8 @@ model Tienda {
   direccion      String?
   img            String?
   fechaCreacion  DateTime  @default(now())
-  productos      Usuario[]
+  usuarios       Usuario[]
+  precioTienda   PrecioTienda[]
 }
 
 model Usuario {
@@ -55,13 +57,26 @@ model Proveedor {
 
 model Producto {
   id             Int      @id @default(autoincrement())
+  codigo         String   @unique
   nombre         String
+  nombrePublico  String
   descripcion    String?
   img            String?
-  precioCompra   Float
-  precioVenta    Float
+  precio         Float
   proveedor      Proveedor @relation(fields: [proveedorId], references: [id])
   proveedorId    Int
+  precioTienda   PrecioTienda[]
+}
+
+model PrecioTienda {
+  id             Int      @id @default(autoincrement())
+  tienda         Tienda @relation(fields: [tiendaId], references: [id])
+  tiendaId       Int
+  producto       Producto @relation(fields: [productoId], references: [id])
+  productoId     Int
+  precioCompra   Float
+  precioVenta    Float
+  stock          Int
   detallesVentas DetalleVenta[]
   cambios        HistorialCambio[]
 }
@@ -79,7 +94,7 @@ model DetalleVenta {
   id             Int      @id @default(autoincrement())
   venta          Venta    @relation(fields: [ventaId], references: [id])
   ventaId        Int
-  producto       Producto @relation(fields: [productoId], references: [id])
+  producto       PrecioTienda @relation(fields: [productoId], references: [id])
   productoId     Int
   cantidad       Int
   precioUnitario Float
@@ -88,7 +103,7 @@ model DetalleVenta {
 
 model HistorialCambio {
   id             Int      @id @default(autoincrement())
-  producto       Producto @relation(fields: [productoId], references: [id])
+  producto       PrecioTienda @relation(fields: [productoId], references: [id])
   productoId     Int
   usuario        Usuario  @relation(fields: [usuarioId], references: [id])
   usuarioId      Int

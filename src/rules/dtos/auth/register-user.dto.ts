@@ -18,8 +18,9 @@ export class RegisterUserDTO {
     const errors:Obj={};
     if(!nombre)errors.nombre='Sin nombre';
     if(!correo)errors.correo='Sin correo';
-    if(!rol)errors.nombre='Sin rol';
-    if(!tiendaId)errors.nombre='Sin tiendaId';
+    if(!rol)errors.rol='Sin rol';
+    else if(!Object.values($Enums.Rol).includes(rol))errors.rol='Rol no valido';
+    if(!tiendaId)errors.tienda='Sin tiendaId';
     else if(!regularExps.correo.test(correo))errors.regularExps='Correo no valido';
     if(!contraseña)errors.contraseña='Sin contraseña';
     else if(contraseña.length<6)errors.contraseña='Contraseña muy corta';

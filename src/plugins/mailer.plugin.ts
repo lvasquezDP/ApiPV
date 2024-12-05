@@ -1,4 +1,5 @@
 import nodeMailer from "nodemailer";
+import { envs } from "../config";
 
 interface SendEmailOptions {
   to: string | string[];
@@ -16,10 +17,10 @@ export class EmailService {
   private transporter;
 
   constructor(
-    service: string,
-    user: string,
-    pass: string,
-    private readonly send: boolean
+    service: string=envs.MAILER_SERVICE,
+    user: string=envs.MAILER_EMAIL,
+    pass: string=envs.MAILER_SECRET_KEY,
+    private readonly send: boolean=envs.SEND_EMAIL
   ) {
     this.transporter = nodeMailer.createTransport({
       service,

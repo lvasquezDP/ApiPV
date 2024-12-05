@@ -1,3 +1,5 @@
+import { Response } from "express";
+
 export class CustomError extends Error {
   private constructor(
     public readonly code: number,
@@ -5,6 +7,7 @@ export class CustomError extends Error {
   ) {
     super(message);
   }
+
   get getError() {
     return { code: this.code, error: this.message };
   }
@@ -12,7 +15,6 @@ export class CustomError extends Error {
   static badRequest(message: string) {
     return new CustomError(400, message);
   }
-
   static unAuthorized(message: string) {
     return new CustomError(401, message);
   }
@@ -26,3 +28,9 @@ export class CustomError extends Error {
     return new CustomError(500, message);
   }
 }
+
+export const handleError = (errors: unknown, res: Response) => {
+  if (errors instanceof CustomError)
+    return res.status(errors.code).json(errors.getError);
+  return res.status(400).json({ errors });
+};
