@@ -1,7 +1,9 @@
+import { UploadedFile } from "express-fileupload";
 import { envs } from "../../config";
 import { prisma } from "../../data";
 import { EmailService, JWT, bcrypt } from "../../plugins";
 import { CustomError, LoginUserDTO, RegisterUserDTO } from "../../rules";
+import { FileUploadService } from "./file-upload.service";
 
 export class AuthService {
   constructor(private readonly emailService: EmailService) {}
@@ -30,11 +32,16 @@ export class AuthService {
     if (await prisma.usuario.findUnique({ where: { correo: DTO.correo } }))
       throw CustomError.badRequest("Email already exist");
     try {
+      let path=null;
+      if(DTO.img && Object.keys(DTO.img).some(x=>x.match('\d')))
+        path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile,`tiendas/${DTO.tiendaId}/users`);
+      
       await this.sendEmail(DTO.correo);
 
       const { contraseña, ...user } = await prisma.usuario.create({
         data: {
           ...DTO,
+          img: path,
           contraseña: bcrypt.hash(DTO.contraseña),
         },
       });

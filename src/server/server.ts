@@ -14,7 +14,7 @@ export class Server {
   private configure() {
     //* Middlewares
     this.app.use(express.json()); // raw
-    this.app.use(fileUpload()); // multipart/form-data
+    this.app.use(fileUpload({defParamCharset:'utf-8'})); // multipart/form-data
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
 
     //* Public Folder
