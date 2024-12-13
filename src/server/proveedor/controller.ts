@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { StoreService } from "../services/store.service";
 import { handleError } from "../../rules";
+import { ProveedorService } from "../services/proveedor.service";
 
-export class StoreController {
-  constructor(private readonly service: StoreService) {}
+export class ProveedorController {
+  constructor(private readonly service: ProveedorService) {}
 
   register = (req: Request, res: Response) => {
     this.service

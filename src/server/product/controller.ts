@@ -1,28 +1,25 @@
 import { Request, Response } from "express";
-import { StoreService } from "../services/store.service";
+import { ProductoService } from "../services/producto.service";
 import { handleError } from "../../rules";
 
-export class StoreController {
-  constructor(private readonly service: StoreService) {}
-
+export class ProductosController {
+  constructor(private readonly service: ProductoService) {}
   register = (req: Request, res: Response) => {
     this.service
       .register(req.body.request)
       .then((x) => res.json(x))
-      .catch((err) => handleError(err, res));
+      .catch((e) => handleError(e, res));
   };
-
   update = (req: Request, res: Response) => {
     this.service
       .update(req.body.request)
       .then((x) => res.json(x))
-      .catch((err) => handleError(err, res));
+      .catch((e) => handleError(e, res));
   };
-
   show = (req: Request, res: Response) => {
     this.service
-      .show(+req.params.id)
+      .show(req.params.codigo)
       .then((x) => res.json(x))
-      .catch((err) => handleError(err, res));
+      .catch((e) => handleError(e, res));
   };
 }

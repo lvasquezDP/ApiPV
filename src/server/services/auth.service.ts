@@ -33,7 +33,7 @@ export class AuthService {
       throw CustomError.badRequest("Email already exist");
     try {
       let path=null;
-      if(DTO.img && Object.keys(DTO.img).some(x=>x.match('\d')))
+      if(!Array.isArray(DTO.img))
         path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile,`tiendas/${DTO.tiendaId}/users`);
       
       await this.sendEmail(DTO.correo);

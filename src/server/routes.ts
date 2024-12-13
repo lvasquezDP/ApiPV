@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthMiddleware } from "../rules/middleware/auth.middleware";
 import { AuthRoutes } from "./auth/routes";
 import { StoreRoutes } from "./store/routes";
+import { ProveedorRoutes } from "./proveedor/routes";
 
 export class AppRoutes {
   static get routes(): Router {
@@ -19,6 +20,7 @@ export class AppRoutes {
     const router = Router();
 
     router.use("/store", StoreRoutes.routes);
+    router.use("/proveedor", ProveedorRoutes.routes);
     
     return router;
   }
