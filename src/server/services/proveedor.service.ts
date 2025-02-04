@@ -10,7 +10,7 @@ export class ProveedorService {
     try {
       const proveedor=await prisma.proveedor.create({ data: {...DTO, img:null} });
       let path=null;
-      if(!Array.isArray(DTO.img))
+      if(DTO.img && !Array.isArray(DTO.img))
         path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile, `proveedor/${proveedor.id}`);
       
       proveedor.img=path;
@@ -26,7 +26,7 @@ export class ProveedorService {
   public async update(DTO: UpdateProveedorDTO) {
     try {
       let path=null;
-      if(!Array.isArray(DTO.img))
+      if(DTO.img && !Array.isArray(DTO.img))
         path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile, `proveedor/${DTO.id}`);
       
       return {
@@ -41,6 +41,26 @@ export class ProveedorService {
     try {
       return {
         proveedor: await prisma.proveedor.findUnique({ where: { id } }),
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public async products(proveedorId: number) {
+    try {
+      return {
+        data: await prisma.producto.findMany({ where: { proveedorId } }),
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public async index() {
+    try {
+      return {
+        data: await prisma.proveedor.findMany(),
       };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);

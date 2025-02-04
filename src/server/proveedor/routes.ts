@@ -15,6 +15,8 @@ export class ProveedorRoutes {
     router.post("/register", middleware, validatorFiles, validator(register_proveedor_Request), controller.register);
     router.post("/update", middleware, validatorFiles, validator(update_proveedor_Request), controller.update);
     router.get("/show/:id", controller.show);
+    router.get("/", controller.index);
+    router.get("/products/:id", controller.products);
 
     return router;
   }

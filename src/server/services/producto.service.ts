@@ -9,7 +9,7 @@ export class ProductoService {
   public async register(DTO: RegisterProductDTO) {
     try {
       let path=null;
-      if(!Array.isArray(DTO.img))
+      if(DTO.img && !Array.isArray(DTO.img))
         path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile,`proveedor/${DTO.proveedorId}/productos`);
       
       return {
@@ -23,7 +23,7 @@ export class ProductoService {
   public async update(DTO: UpdateProductoDTO) {
     try {
       let path=null;
-      if(!Array.isArray(DTO.img))
+      if(DTO.img && !Array.isArray(DTO.img))
         path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile,`proveedor/${DTO.proveedorId}/productos`);
       
       return {

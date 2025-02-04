@@ -18,6 +18,7 @@ export class StoreRoutes {
     router.post("/register", middleware, validator(register_proveedor_Request), controller.register);
     router.post("/update", middleware, controller.update);
     router.get("/show/:id", controller.show);
+    router.get("/", controller.index);
 
     return router;
   }

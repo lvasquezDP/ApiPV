@@ -11,7 +11,7 @@ export class StoreService {
     try {
       const tienda=await prisma.tienda.create({ data: {...DTO, img:null} });
       let path=null;
-      if(!Array.isArray(DTO.img))
+      if(DTO.img && !Array.isArray(DTO.img))
         path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile, `tiendas/${tienda.id}`);
       
       tienda.img=path;
@@ -26,7 +26,7 @@ export class StoreService {
   public async update(DTO: UpdateStoreDTO) {
     try {
       let path=null;
-      if(!Array.isArray(DTO.img))
+      if(DTO.img && !Array.isArray(DTO.img))
         path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile, `tiendas/${DTO.id}`);
       
       return {
@@ -44,6 +44,15 @@ export class StoreService {
           where: { id },
           include: { usuarios: {select:{nombre:true,correo:true,img:true}} },
         }),
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+  public async index() {
+    try {
+      return {
+        data: await prisma.tienda.findMany(),
       };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);

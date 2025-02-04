@@ -12,6 +12,13 @@ export class ProveedorController {
       .catch((err) => handleError(err, res));
   };
 
+  index = (req: Request, res: Response) => {
+    this.service
+      .index()
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+
   update = (req: Request, res: Response) => {
     this.service
       .update(req.body.request)
@@ -22,6 +29,13 @@ export class ProveedorController {
   show = (req: Request, res: Response) => {
     this.service
       .show(+req.params.id)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+  
+  products = (req: Request, res: Response) => {
+    this.service
+      .products(+req.params.id)
       .then((x) => res.json(x))
       .catch((err) => handleError(err, res));
   };

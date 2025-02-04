@@ -6,6 +6,7 @@ export const login_user_Request = {
   correo: Joi.string().required().email({
     minDomainSegments: 2,
   }),
+  save: Joi.boolean(),
 };
 
 export type LoginUserDTO = Joi.extractType<typeof login_user_Request>;

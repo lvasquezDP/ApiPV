@@ -3,6 +3,7 @@ import { AuthMiddleware } from "../rules/middleware/auth.middleware";
 import { AuthRoutes } from "./auth/routes";
 import { StoreRoutes } from "./store/routes";
 import { ProveedorRoutes } from "./proveedor/routes";
+import { ProductosRoute } from "./product/routes";
 
 export class AppRoutes {
   static get routes(): Router {
@@ -21,6 +22,7 @@ export class AppRoutes {
 
     router.use("/store", StoreRoutes.routes);
     router.use("/proveedor", ProveedorRoutes.routes);
+    router.use("/product", ProductosRoute.routes);
     
     return router;
   }

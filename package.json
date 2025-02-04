@@ -20,6 +20,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.7.5",
     "@types/nodemailer": "^6.4.17",
+    "@types/ws": "^8.5.14",
     "rimraf": "^6.0.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.6.3"
@@ -36,6 +37,7 @@
     "mongoose": "^8.7.1",
     "nodemailer": "^6.9.16",
     "prisma": "^6.0.1",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "ws": "^8.18.0"
   }
 }
