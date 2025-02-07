@@ -19,6 +19,13 @@ export class AuthController {
       .catch((err) => handleError(err, res));
   };
 
+  refresh = (req: Request, res: Response) => {
+    this.service
+      .refresh(req.params.token)
+      .then((user) => res.json(user))
+      .catch((err) => handleError(err, res));
+  };
+
   validate = (req: Request, res: Response) => {
     this.service
       .validate(req.params.token)

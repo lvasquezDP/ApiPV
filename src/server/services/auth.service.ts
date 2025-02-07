@@ -8,7 +8,7 @@ import { FileUploadService } from "./file-upload.service";
 export class AuthService {
   constructor(private readonly emailService: EmailService) {}
 
-  public async loginUser(DTO:LoginUserDTO) {
+  public async loginUser(DTO: LoginUserDTO) {
     const userdb = await prisma.usuario.findUnique({
       where: { correo: DTO.correo },
       include: { tienda: true },
@@ -32,10 +32,13 @@ export class AuthService {
     if (await prisma.usuario.findUnique({ where: { correo: DTO.correo } }))
       throw CustomError.badRequest("Email already exist");
     try {
-      let path=null;
-      if(DTO.img && !Array.isArray(DTO.img))
-        path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile,`tiendas/${DTO.tiendaId}/users`);
-      
+      let path = null;
+      if (DTO.img && !Array.isArray(DTO.img))
+        path = await new FileUploadService().uploadSingle(
+          DTO.img as UploadedFile,
+          `tiendas/${DTO.tiendaId}/users`
+        );
+
       await this.sendEmail(DTO.correo);
 
       const { contraseña, ...user } = await prisma.usuario.create({
@@ -49,6 +52,25 @@ export class AuthService {
       return {
         token: await JWT.generateToken({ correo: user.correo, id: user.id }),
         user,
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public async refresh(token: string) {
+    const { user, newToken } = await JWT.refresh(token);
+    const userdb = await prisma.usuario.findUnique({
+      where: { correo: user.correo },
+      include: { tienda: true },
+    });
+    if (!userdb) throw CustomError.unAuthorized("User not exist");
+    try {
+      const { contraseña, ...usuario } = userdb;
+
+      return {
+        token: newToken,
+        user: usuario,
       };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);

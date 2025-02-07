@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express, { NextFunction, Request, Response, Router } from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
 
@@ -7,19 +7,25 @@ export class Server {
   private serverListener?: any;
 
   constructor(
-    private readonly port:number,
-    private readonly public_path:string= "public",
-  ) { this.configure(); }
+    private readonly port: number,
+    private readonly public_path: string = "public"
+  ) {
+    this.configure();
+  }
 
   private configure() {
     //* Middlewares
     this.app.use(express.json()); // raw
-    this.app.use(fileUpload({defParamCharset:'utf-8'})); // multipart/form-data
+    this.app.use(fileUpload({ defParamCharset: "utf-8" })); // multipart/form-data
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
 
     //* Public Folder
     this.app.use(express.static(this.public_path));
 
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      console.table({ [req.method]: req.url });
+      return next();
+    });
     //* SPA /^\/(?!api).*/  <== Únicamente si no empieza con la palabra api
     this.app.get(/^\/(?!api).*/, (req, res) => {
       let rutePath;
