@@ -1,22 +1,17 @@
-import "joi-extract-type";
-import * as Joi from "@hapi/joi";
+import { z } from "zod";
+import { UploadedFile } from "express-fileupload";
 
-export const register_store_Request = {
-  nombre: Joi.string().required(),
-  contacto: Joi.string().required().email({ minDomainSegments: 2 }),
-  direccion: Joi.string().required(),
-  img: Joi.any(),
-};
+export const register_store_Request = z.object({
+  nombre: z.string(),
+  contacto: z.string().email(),
+  direccion: z.string(),
+  img: z.custom<UploadedFile>().optional(),
+});
 
-export type RegisterStoreDTO = Joi.extractType<typeof register_store_Request>;
+export type RegisterStoreDTO = z.infer<typeof register_store_Request>;
 
+export const update_store_Request = register_store_Request
+  .partial()
+  .extend({ id: z.number() });
 
-export const update_store_Request = {
-  id: Joi.number().required(),
-  nombre: Joi.string(),
-  contacto: Joi.string().email({ minDomainSegments: 2 }),
-  direccion: Joi.string(),
-  img: Joi.any(),
-};
-
-export type UpdateStoreDTO = Joi.extractType<typeof update_store_Request>;
+export type UpdateStoreDTO = z.infer<typeof update_store_Request>;

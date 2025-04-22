@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
 import { envs } from "../config";
+import type { StringValue } from "ms";
 
 const JWT_SEED = envs.JWT_SEED;
 
 export class JWT {
-  static generateToken(payload: object, duration: string = "2h") {
+  static generateToken(payload: object, duration: StringValue = "2h") {
     return new Promise((resolve) => {
       jwt.sign(payload, JWT_SEED, { expiresIn: duration }, (err, token) => {
         if (err) return resolve(null);

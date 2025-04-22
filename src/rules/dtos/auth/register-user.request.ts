@@ -1,14 +1,14 @@
-import "joi-extract-type";
-import * as Joi from "@hapi/joi";
-import { $Enums } from "@prisma/client";
+import { z } from "zod";
+import { UploadedFile } from "express-fileupload";
+import { Rol } from "@prisma/client";
 
-export const register_user_Request = {
-  nombre: Joi.string().required(),
-  correo: Joi.string().required().email({ minDomainSegments: 2 }),
-  contraseña: Joi.string().required().min(6),
-  rol: Joi.string().valid(Object.values($Enums.Rol)).required(),
-  tiendaId: Joi.number().required(),
-  img: Joi.any(),
-};
+export const register_user_Request = z.object({
+  nombre: z.string(),
+  correo: z.string().email(),
+  contraseña: z.string().min(6),
+  rol: z.nativeEnum(Rol),
+  tiendaId: z.number(),
+  img: z.custom<UploadedFile>().optional(),
+});
 
-export type RegisterUserDTO = Joi.extractType<typeof register_user_Request>;
+export type RegisterUserDTO = z.infer<typeof register_user_Request>;

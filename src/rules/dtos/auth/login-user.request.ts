@@ -1,12 +1,8 @@
-import "joi-extract-type";
-import * as Joi from "@hapi/joi";
+import { z } from "zod";
 
-export const login_user_Request = {
-  contraseña: Joi.string().required().min(6),
-  correo: Joi.string().required().email({
-    minDomainSegments: 2,
-  }),
-  save: Joi.boolean(),
-};
-
-export type LoginUserDTO = Joi.extractType<typeof login_user_Request>;
+export const login_user_Request = z.object({
+  contraseña: z.string().min(6),
+  correo: z.string().email(),
+  save: z.boolean().optional(),
+});
+export type LoginUserDTO = z.infer<typeof login_user_Request>;

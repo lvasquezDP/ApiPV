@@ -1,25 +1,17 @@
-import "joi-extract-type";
-import * as Joi from "@hapi/joi";
+import { z } from "zod";
+import { UploadedFile } from "express-fileupload";
 
-export const register_proveedor_Request = {
-  nombre: Joi.string().required(),
-  contacto: Joi.string().required().email({ minDomainSegments: 2 }),
-  direccion: Joi.string().required(),
-  img: Joi.any(),
-};
+export const register_proveedor_Request = z.object({
+    nombre: z.string(),
+    contacto: z.string().email(),
+    direccion: z.string(),
+    img: z.custom<UploadedFile>().optional(),
+});
 
-export type RegisterProveedorDTO = Joi.extractType<
-  typeof register_proveedor_Request
->;
+export type RegisterProveedorDTO = z.infer<typeof register_proveedor_Request>;
 
-export const update_proveedor_Request = {
-  id: Joi.number().required(),
-  nombre: Joi.string(),
-  contacto: Joi.string().email({ minDomainSegments: 2 }),
-  direccion: Joi.string(),
-  img: Joi.any(),
-};
+export const update_proveedor_Request = register_proveedor_Request
+  .partial()
+  .extend({ id: z.number() });
 
-export type UpdateProveedorDTO = Joi.extractType<
-  typeof update_proveedor_Request
->;
+  export type UpdateProveedorDTO = z.infer<typeof update_proveedor_Request>;

@@ -1,27 +1,39 @@
-import "joi-extract-type";
-import * as Joi from "@hapi/joi";
+import { z } from "zod";
+import { UploadedFile } from "express-fileupload";
 
-export const register_product_Request = {
-  codigo: Joi.string().required(),
-  nombre: Joi.string().required(),
-  nombrePublico: Joi.string().required(),
-  descripcion: Joi.string().required(),
-  precio: Joi.number().required(),
-  proveedorId: Joi.number().required(),
-  img: Joi.any(),
-};
+export const register_product_Request = z.object({
+  codigo: z.string(),
+  nombre: z.string(),
+  nombrePublico: z.string(),
+  descripcion: z.string(),
+  precio: z.number(),
+  proveedorId: z.number(),
+  img: z.custom<UploadedFile>().optional(),
+});
 
-export type RegisterProductDTO = Joi.extractType<typeof register_product_Request>;
+export type RegisterProductDTO = z.infer<typeof register_product_Request>;
 
-export const update_product_Request = {
-  id: Joi.number().required(),
-  codigo: Joi.string(),
-  nombre: Joi.string(),
-  nombrePublico: Joi.string(),
-  descripcion: Joi.string(),
-  precio: Joi.number(),
-  proveedorId: Joi.number(),
-  img: Joi.any(),
-};
+export const update_product_Request = register_product_Request
+  .partial()
+  .extend({ id: z.number() });
 
-export type UpdateProductoDTO = Joi.extractType<typeof update_product_Request>;
+export type UpdateProductoDTO = z.infer<typeof update_product_Request>;
+
+export const register_precioTienda_Request = z
+  .object({
+    product: register_product_Request.optional(),
+    productoId: z.number().optional(),
+    tiendaId: z.number(),
+    precioCompra: z.number(),
+    precioVenta: z.number(),
+    stock: z.number(),
+    minStock: z.number(),
+  })
+  .refine((data) => data.product || data.productoId, {
+    message: "Debe incluir 'product' o 'productoId'",
+    path: ["product"],
+  });
+
+export type RegisterPrecioTiendaDTO = z.infer<
+  typeof register_precioTienda_Request
+>;

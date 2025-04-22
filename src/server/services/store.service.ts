@@ -1,8 +1,9 @@
 import { UploadedFile } from "express-fileupload";
 import { prisma } from "../../data";
 import { EmailService } from "../../plugins";
-import { CustomError, RegisterStoreDTO, UpdateStoreDTO } from "../../rules";
+import { CustomError, RegisterPrecioTiendaDTO, RegisterStoreDTO, UpdateStoreDTO } from "../../rules";
 import { FileUploadService } from "./file-upload.service";
+import { ProductoService } from "./producto.service";
 
 export class StoreService {
   constructor(private readonly emailService: EmailService) {}
@@ -23,6 +24,21 @@ export class StoreService {
       throw CustomError.internalServer(`${error}`);
     }
   }
+
+  public async precioTienda(DTO: RegisterPrecioTiendaDTO) {
+    try {
+      let productoId = DTO.productoId ?? 0;
+      if(DTO.product) productoId = (await new ProductoService().register(DTO.product)).producto.id;
+      delete DTO.product;
+      delete DTO.productoId;
+      return {
+        precioTienda: await prisma.precioTienda.create({ data: {productoId,...DTO} })
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
   public async update(DTO: UpdateStoreDTO) {
     try {
       let path=null;

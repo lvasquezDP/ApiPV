@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { AuthMiddleware, register_proveedor_Request, validator } from "../../rules";
+import { AuthMiddleware, register_precioTienda_Request, register_proveedor_Request, validator, validatorFiles } from "../../rules";
 import { StoreController } from "./controller";
 import { StoreService } from "../services/store.service";
 import { EmailService } from "../../plugins";
@@ -19,6 +19,7 @@ export class StoreRoutes {
     router.post("/update", middleware, controller.update);
     router.get("/show/:id", controller.show);
     router.get("/", controller.index);
+    router.post("/precioTienda", validatorFiles, validator(register_precioTienda_Request), controller.precioTienda);
 
     return router;
   }

@@ -18,6 +18,12 @@ export class StoreController {
       .then((x) => res.json(x))
       .catch((err) => handleError(err, res));
   };
+  precioTienda = (req: Request, res: Response) => {
+    this.service
+      .precioTienda(req.body.request)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
 
   update = (req: Request, res: Response) => {
     this.service
