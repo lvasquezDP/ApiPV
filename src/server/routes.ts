@@ -11,7 +11,7 @@ export class AppRoutes {
 
     // Definir las rutas
     router.use("/api/auth", AuthRoutes.routes);
-    // router.use("/api", AuthMiddleware.validateJWT, this.api);
+    router.use("/api", AuthMiddleware.validateJWT, this.api);
 
 
     return router;

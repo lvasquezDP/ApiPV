@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ZodSchema } from "zod";
 
 export const validator =
-  (schema: ZodSchema<any>) =>
+  <T>(schema: ZodSchema<T>) =>
   (req: Request, res: Response, next: NextFunction) => {
     const temp = req.body.user;
     delete req.body.user;

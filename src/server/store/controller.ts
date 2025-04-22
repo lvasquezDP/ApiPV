@@ -12,15 +12,16 @@ export class StoreController {
       .catch((err) => handleError(err, res));
   };
 
-  register = (req: Request, res: Response) => {
+  show = (req: Request, res: Response) => {
     this.service
-      .register(req.body.request)
+      .show(+req.params.id)
       .then((x) => res.json(x))
       .catch((err) => handleError(err, res));
   };
-  precioTienda = (req: Request, res: Response) => {
+
+  register = (req: Request, res: Response) => {
     this.service
-      .precioTienda(req.body.request)
+      .register(req.body.request)
       .then((x) => res.json(x))
       .catch((err) => handleError(err, res));
   };
@@ -32,10 +33,34 @@ export class StoreController {
       .catch((err) => handleError(err, res));
   };
 
-  show = (req: Request, res: Response) => {
+  // productos
+
+  codigo = (req: Request, res: Response) => {
     this.service
-      .show(+req.params.id)
+      .codigo(req.params.codigo, +req.body.user.id)
       .then((x) => res.json(x))
       .catch((err) => handleError(err, res));
   };
+
+  products = (req: Request, res: Response) => {
+    this.service
+      .products(+req.body.user.id)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+
+  registerProduct = (req: Request, res: Response) => {
+    this.service
+      .registerProduct(req.body.request)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+
+  updateProducto = (req: Request, res: Response) => {
+    this.service
+      .updateProducto(req.body.request)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+
 }

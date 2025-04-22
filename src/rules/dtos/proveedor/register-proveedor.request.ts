@@ -5,7 +5,11 @@ export const register_proveedor_Request = z.object({
     nombre: z.string(),
     contacto: z.string().email(),
     direccion: z.string(),
-    img: z.custom<UploadedFile>().optional(),
+    img: z.custom<UploadedFile>().optional()
+    .refine(
+      (file) => !Array.isArray(file),
+      { message: "Solo se permite un archivo, no múltiples." }
+    ),
 });
 
 export type RegisterProveedorDTO = z.infer<typeof register_proveedor_Request>;

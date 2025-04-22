@@ -1,4 +1,3 @@
-import { UploadedFile } from "express-fileupload";
 import { prisma } from "../../data";
 import { CustomError, RegisterProveedorDTO, UpdateProveedorDTO } from "../../rules";
 import { FileUploadService } from "./file-upload.service";
@@ -10,8 +9,8 @@ export class ProveedorService {
     try {
       const proveedor=await prisma.proveedor.create({ data: {...DTO, img:null} });
       let path=null;
-      if(DTO.img && !Array.isArray(DTO.img))
-        path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile, `proveedor/${proveedor.id}`);
+      if(DTO.img)
+        path=await new FileUploadService().uploadSingle(DTO.img, `proveedor/${proveedor.id}`);
       
       proveedor.img=path;
 
@@ -26,8 +25,8 @@ export class ProveedorService {
   public async update(DTO: UpdateProveedorDTO) {
     try {
       let path=null;
-      if(DTO.img && !Array.isArray(DTO.img))
-        path=await new FileUploadService().uploadSingle(DTO.img as UploadedFile, `proveedor/${DTO.id}`);
+      if(DTO.img)
+        path=await new FileUploadService().uploadSingle(DTO.img, `proveedor/${DTO.id}`);
       
       return {
         proveedor: await prisma.proveedor.update({ data: { ...DTO, img: path }, where:{ id: DTO.id } }),

@@ -8,7 +8,12 @@ export const register_user_Request = z.object({
   contraseña: z.string().min(6),
   rol: z.nativeEnum(Rol),
   tiendaId: z.number(),
-  img: z.custom<UploadedFile>().optional(),
+  img: z
+    .custom<UploadedFile>()
+    .optional()
+    .refine((file) => !Array.isArray(file), {
+      message: "Solo se permite un archivo, no múltiples.",
+    }),
 });
 
 export type RegisterUserDTO = z.infer<typeof register_user_Request>;
