@@ -78,17 +78,17 @@ export class StoreService {
 
   public async codigo(codigo: string, userId: number) {
     try {
-      return {
-        producto: await prisma.precioTienda.findFirst({
-          where: {
-            producto: { codigo },
-            tienda: { usuarios: { some: { id: userId } } },
-          },
-          include: { producto: { include: { proveedor: true } } },
-        }),
-      };
+      const producto = await prisma.precioTienda.findFirst({
+        where: {
+          producto: { codigo },
+          tienda: { usuarios: { some: { id: userId } } },
+        },
+        include: { producto: { include: { proveedor: true } } },
+      });
+      if (!producto) throw "Producto not exist";
+      return { producto };
     } catch (error) {
-      throw CustomError.internalServer(`${error}`);
+      throw CustomError.notFound(`${error}`);
     }
   }
 
