@@ -16,7 +16,10 @@ export class ProductoService {
     try {
       let path = null;
       if (DTO.img)
-        path = await new FileUploadService().uploadSingle(DTO.img,`proveedor/${DTO.proveedorId}/productos`);
+        path = await new FileUploadService().uploadSingle(
+          DTO.img,
+          `proveedor/${DTO.proveedorId}/productos`
+        );
 
       if (proveedor)
         proveedorId = (await new ProveedorService().register(proveedor))
@@ -24,7 +27,7 @@ export class ProductoService {
 
       return {
         producto: await prisma.producto.create({
-          data: { ...data, proveedorId, img: path},
+          data: { ...data, proveedorId, img: path },
         }),
       };
     } catch (error) {
@@ -36,7 +39,10 @@ export class ProductoService {
     try {
       let path = null;
       if (DTO.img)
-        path = await new FileUploadService().uploadSingle(DTO.img,`proveedor/${DTO.proveedorId}/productos`);
+        path = await new FileUploadService().uploadSingle(
+          DTO.img,
+          `proveedor/${DTO.proveedorId}/productos`
+        );
 
       return {
         producto: await prisma.producto.update({
@@ -49,10 +55,14 @@ export class ProductoService {
     }
   }
 
-  public async show(codigo: string) {
+  public async find(take: number, codigo: string) {
     try {
       return {
-        producto: await prisma.producto.findUnique({ where: { codigo } }),
+        productos: await prisma.producto.findMany({
+          where: { codigo: { contains: codigo } },
+          include: { proveedor: true },
+          take,
+        }),
       };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);

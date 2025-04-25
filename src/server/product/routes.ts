@@ -9,7 +9,7 @@ export class ProductosRoute {
 
     const controller = new ProductosController(new ProductoService());
 
-    router.get("/:codigo",controller.show);
+    router.get("/find/:take/:codigo",controller.find);
     router.post("/register", validatorFiles, validator(register_product_Request) ,controller.register);
     router.post("/update", validatorFiles, validator(update_product_Request) ,controller.update);
 

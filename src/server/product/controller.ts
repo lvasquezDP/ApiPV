@@ -16,9 +16,9 @@ export class ProductosController {
       .then((x) => res.json(x))
       .catch((e) => handleError(e, res));
   };
-  show = (req: Request, res: Response) => {
+  find = (req: Request, res: Response) => {
     this.service
-      .show(req.params.codigo)
+      .find(+req.params.take,req.params.codigo)
       .then((x) => res.json(x))
       .catch((e) => handleError(e, res));
   };
