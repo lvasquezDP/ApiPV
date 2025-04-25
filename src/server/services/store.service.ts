@@ -28,7 +28,7 @@ export class StoreService {
         tienda: await prisma.tienda.findUnique({
           where: { id },
           include: {
-            usuarios: { select: { nombre: true, correo: true, img: true } },
+            usuarios: { select: { id: true, nombre: true, correo: true, img: true, rol: true } },
           },
         }),
       };
