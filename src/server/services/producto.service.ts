@@ -12,12 +12,18 @@ export class ProductoService {
   constructor() {}
 
   public async register(DTO: RegisterProductDTO) {
-    let { proveedor, proveedorId = 0, ...data } = DTO;
+    let { proveedor, proveedorId = 0, img, ...data } = DTO;
+
+    const exist = await prisma.producto.findFirst({
+      where: { codigo: data.codigo },
+    });
+    if (exist) throw CustomError.forbiden("Codigo ya registrado");
+
     try {
       let path = null;
-      if (DTO.img)
+      if (img)
         path = await new FileUploadService().uploadSingle(
-          DTO.img,
+          img,
           `proveedor/${DTO.proveedorId}/productos`
         );
 

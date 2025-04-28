@@ -4,12 +4,12 @@ import { register_proveedor_Request } from "../proveedor/register-proveedor.requ
 
 const baseProductSchema = z.object({
   proveedor: register_proveedor_Request.optional(),
-  proveedorId: z.number().optional(),
+  proveedorId: z.coerce.number().optional(),
   codigo: z.string(),
   nombre: z.string(),
   nombrePublico: z.string(),
   descripcion: z.string(),
-  precio: z.number(),
+  precio: z.coerce.number(),
   img: z.custom<UploadedFile>().optional()
   .refine(
     (file) => !Array.isArray(file),
@@ -18,8 +18,8 @@ const baseProductSchema = z.object({
 });
 
 export const register_product_Request = baseProductSchema.refine((data) => data.proveedor || data.proveedorId, {
-  message: "Debe incluir 'proveedor' o 'proveedorId'",
-  path: ["proveedor"],
+  message: "Debe incluir 'proveedor'",
+  path: ["proveedorId"],
 });
 
 export type RegisterProductDTO = z.infer<typeof register_product_Request>;
@@ -27,7 +27,7 @@ export type RegisterProductDTO = z.infer<typeof register_product_Request>;
 export const update_product_Request = baseProductSchema
   .partial()
   .extend({ id: z.number() }).refine((data) => data.proveedor || data.proveedorId, {
-    message: "Debe incluir 'proveedor' o 'proveedorId'",
+    message: "Debe incluir 'proveedor'",
     path: ["proveedor"],
   });
 

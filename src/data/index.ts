@@ -13,5 +13,10 @@ export const prisma = new PrismaClient().$extends({
         compute: (x) => (x.img &&= `${envs.WEBSERVICE_URL}${x.img}`),
       },
     },
+    producto: {
+      img: {
+        compute: (x) => (x.img &&= `${envs.WEBSERVICE_URL}${x.img}`),
+      },
+    },
   },
 });

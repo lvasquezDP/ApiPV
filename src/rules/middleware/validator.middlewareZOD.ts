@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { ZodSchema } from "zod";
+import { ZodEffects, ZodSchema, ZodTypeAny } from "zod";
 
 export const validator =
-  <T>(schema: ZodSchema<T>) =>
+  <T>(schema: ZodSchema<T> | ZodEffects<ZodTypeAny>) =>
   (req: Request, res: Response, next: NextFunction) => {
     const temp = req.body.user;
     delete req.body.user;

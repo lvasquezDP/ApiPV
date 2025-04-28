@@ -28,7 +28,15 @@ export class StoreService {
         tienda: await prisma.tienda.findUnique({
           where: { id },
           include: {
-            usuarios: { select: { id: true, nombre: true, correo: true, img: true, rol: true } },
+            usuarios: {
+              select: {
+                id: true,
+                nombre: true,
+                correo: true,
+                img: true,
+                rol: true,
+              },
+            },
           },
         }),
       };
@@ -44,7 +52,10 @@ export class StoreService {
       });
       let path = null;
       if (DTO.img)
-        path = await new FileUploadService().uploadSingle(DTO.img,`tiendas/${tienda.id}`);
+        path = await new FileUploadService().uploadSingle(
+          DTO.img,
+          `tiendas/${tienda.id}`
+        );
 
       tienda.img = path;
 
@@ -63,7 +74,10 @@ export class StoreService {
     try {
       let path = null;
       if (DTO.img)
-        path = await new FileUploadService().uploadSingle(DTO.img,`tiendas/${DTO.id}`);
+        path = await new FileUploadService().uploadSingle(
+          DTO.img,
+          `tiendas/${DTO.id}`
+        );
 
       return {
         tienda: await prisma.tienda.update({
@@ -108,11 +122,17 @@ export class StoreService {
   }
 
   public async registerProduct(DTO: RegisterProductStoreDTO) {
-    let { product, productoId = 0, ...data } = DTO;
+    let { producto, productoId = 0, img, ...data } = DTO;
+    const exist = await prisma.precioTienda.findFirst({
+      where: { tiendaId: DTO.tiendaId, productoId:productoId },
+    });
+    if (exist) throw CustomError.forbiden("El proucto ya registrado");
+    
     try {
-      if (product)
-        productoId = (await new ProductoService().register(product)).producto
-          .id;
+      
+      if (producto)
+        productoId = (await new ProductoService().register({ ...producto, img }))
+      .producto.id;
 
       return {
         precioTienda: await prisma.precioTienda.create({
@@ -125,15 +145,15 @@ export class StoreService {
   }
 
   public async updateProducto(DTO: RegisterProductStoreDTO) {
+    let { producto, productoId = 0, img, ...data } = DTO;
     try {
       let productoId = DTO.productoId ?? 0;
-      if (DTO.product)
-        productoId = (await new ProductoService().register(DTO.product))
+      if (producto)
+        productoId = (await new ProductoService().register(producto))
           .producto.id;
-      delete DTO.product;
       return {
         precioTienda: await prisma.precioTienda.create({
-          data: { ...DTO, productoId },
+          data: { ...data, productoId },
         }),
       };
     } catch (error) {
