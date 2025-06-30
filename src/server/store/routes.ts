@@ -3,6 +3,7 @@ import {
   AuthMiddleware,
   register_productStore_Request,
   register_store_Request,
+  register_ventaStore_Request,
   update_store_Request,
   validator,
   validatorFiles,
@@ -26,9 +27,19 @@ export class StoreRoutes {
     router.post("/update", middleware, validator(update_store_Request),controller.update);
 
     router.use("/product", this.productos(controller));
+    router.use("/ventas", this.ventas(controller));
     return router;
   }
 
+  private static ventas(controller: StoreController): Router {
+    const router = Router();
+
+    router.get("/:tiendaId", controller.ventas);
+    router.get("/detalle/:id", controller.venta);
+    router.post("/register", validator(register_ventaStore_Request), controller.registerVenta);
+    
+    return router;
+  }
   private static productos(controller: StoreController): Router {
     const router = Router();
 

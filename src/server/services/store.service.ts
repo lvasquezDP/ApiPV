@@ -4,6 +4,7 @@ import {
   CustomError,
   RegisterProductStoreDTO,
   RegisterStoreDTO,
+  RegisterVentaStoreDTO,
   UpdateStoreDTO,
 } from "../../rules";
 import { FileUploadService } from "./file-upload.service";
@@ -124,15 +125,15 @@ export class StoreService {
   public async registerProduct(DTO: RegisterProductStoreDTO) {
     let { producto, productoId = 0, img, ...data } = DTO;
     const exist = await prisma.precioTienda.findFirst({
-      where: { tiendaId: DTO.tiendaId, productoId:productoId },
+      where: { tiendaId: DTO.tiendaId, productoId: productoId },
     });
     if (exist) throw CustomError.forbiden("El proucto ya registrado");
-    
+
     try {
-      
       if (producto)
-        productoId = (await new ProductoService().register({ ...producto, img }))
-      .producto.id;
+        productoId = (
+          await new ProductoService().register({ ...producto, img })
+        ).producto.id;
 
       return {
         precioTienda: await prisma.precioTienda.create({
@@ -149,8 +150,8 @@ export class StoreService {
     try {
       let productoId = DTO.productoId ?? 0;
       if (producto)
-        productoId = (await new ProductoService().register(producto))
-          .producto.id;
+        productoId = (await new ProductoService().register(producto)).producto
+          .id;
       return {
         precioTienda: await prisma.precioTienda.create({
           data: { ...data, productoId },
@@ -158,6 +159,95 @@ export class StoreService {
       };
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public async ventas(tiendaId: number) {
+    try {
+      return {
+        ventas: await prisma.venta.findMany({
+          where: {
+            usuario: { tiendaId },
+          },
+          include: { usuario: true },
+        }),
+      };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public async venta(id: number) {
+    try {
+      return await prisma.venta.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          usuario: { include: { tienda: true } },
+          detalles: { include: { producto: {include:{producto:true}} } },
+        },
+      });
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  public async registerVenta(DTO: RegisterVentaStoreDTO, userId: number) {
+    try {
+      // Paso 1: obtener los productos desde PrecioTienda
+      const productosDB = await prisma.precioTienda.findMany({
+        where: {
+          id: {
+            in: DTO.productos.map((p) => p.id),
+          },
+        },
+      });
+
+      if (productosDB.length !== DTO.productos.length) {
+        throw "Uno o más productos no existen";
+      }
+
+      // Paso 2: construir los detalles con precio y subtotal
+      const detallesVenta = DTO.productos.map((producto) => {
+        const info = productosDB.find((p) => p.id === producto.id);
+        if (!info) throw `Producto con ID ${producto.id} no encontrado`;
+
+        const precioUnitario = info.precioVenta;
+        const subtotal = precioUnitario * producto.cantidad;
+
+        return {
+          productoId: producto.id,
+          cantidad: producto.cantidad,
+          precioUnitario,
+          subtotal,
+        };
+      });
+
+      const total = detallesVenta.reduce((acc, d) => acc + d.subtotal, 0);
+
+      // Paso 3: crear la venta y sus detalles en transacción
+      const venta = await prisma.$transaction(async (tx) => {
+        const nuevaVenta = await tx.venta.create({
+          data: {
+            usuarioId: userId,
+            total,
+          },
+        });
+
+        await tx.detalleVenta.createMany({
+          data: detallesVenta.map((d) => ({
+            ...d,
+            ventaId: nuevaVenta.id,
+          })),
+        });
+
+        return nuevaVenta;
+      });
+
+      return venta;
+    } catch (error) {
+      throw CustomError.internalServer(`Error al registrar venta: ${error}`);
     }
   }
 }

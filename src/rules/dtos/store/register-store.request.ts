@@ -70,3 +70,16 @@ export const register_productStore_Request = z
 export type RegisterProductStoreDTO = z.infer<
   typeof register_productStore_Request
 >;
+
+export const register_ventaStore_Request = z
+  .object({
+    productos: z.array(
+      z.object({
+        id: z.coerce.number(),
+        cantidad: z.coerce.number(),
+      })
+      
+    ),
+  });
+
+export type RegisterVentaStoreDTO = z.infer<typeof register_ventaStore_Request>;

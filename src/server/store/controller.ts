@@ -63,4 +63,27 @@ export class StoreController {
       .catch((err) => handleError(err, res));
   };
 
+  // ventas
+
+  venta = (req: Request, res: Response) => {
+    this.service
+      .venta(+req.params.id)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+
+  ventas = (req: Request, res: Response) => {
+    this.service
+      .ventas(+req.params.tiendaId)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+
+  registerVenta = (req: Request, res: Response) => {
+    this.service
+      .registerVenta(req.body.request,+req.body.user.id)
+      .then((x) => res.json(x))
+      .catch((err) => handleError(err, res));
+  };
+
 }
